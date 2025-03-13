@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Web.Http;
 using BusinessEntities;
 using Core.Services.Users;
+using Microsoft.Ajax.Utilities;
 using WebApi.Models.Users;
 
 namespace WebApi.Controllers
@@ -28,6 +29,10 @@ namespace WebApi.Controllers
         [HttpPost]
         public HttpResponseMessage CreateUser(Guid userId, [FromBody] UserModel model)
         {
+            if(_getUserService.GetUser(userId) != null)
+            {
+                return AlreadyExist();
+            }
             var user = _createUserService.Create(userId, model.Name, model.Email, model.Type, model.AnnualSalary, model.Tags);
             return Found(new UserData(user));
         }
@@ -89,7 +94,8 @@ namespace WebApi.Controllers
         [HttpGet]
         public HttpResponseMessage GetUsersByTag(string tag)
         {
-            throw new NotImplementedException();
+            var users =_getUserService.GetUsersByTag(tag);
+            return Found(users);
         }
     }
 }

@@ -56,5 +56,26 @@ namespace Data.Repositories
         {
             base.DeleteAll<UsersListIndex>();
         }
+
+        public IEnumerable<User> Get(string tag = null)
+        {
+
+            var query = _documentSession.Query<User, UsersListIndex>();
+
+            if (!string.IsNullOrEmpty(tag))
+            {
+                query = (Raven.Client.Linq.IRavenQueryable<User>)query.Where(u => u.Tags.Contains(tag)); // LINQ-style query
+            }
+
+            return query.ToList();
+
+            //var query = _documentSession.Advanced.DocumentQuery<User, UsersListIndex>();
+            //if (tag != null)
+            //{
+            //    query = query.WhereEquals("tags", tag);
+            //}
+
+            //return query.ToList();
+        }
     }
 }
